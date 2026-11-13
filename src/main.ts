@@ -1,153 +1,21 @@
 import './style.css';
-
-import { Application } from 'pixi.js';
-import {
-  Container3D,
-  DirectionalLight,
-  Material3D,
-  Mesh3D,
-  SphereGeometry,
-  View3D,
-} from '@pixi/3d';
-import { OrbitCamera } from '@pixi/3d/extras';
+import { Application, Assets, Sprite } from 'pixi.js';
 
 const host = document.querySelector<HTMLDivElement>('#canvas-host');
 const status = document.querySelector<HTMLParagraphElement>('#status');
 const animationButtons = document.querySelectorAll<HTMLButtonElement>('[data-clip]');
 
 if (!host || !status) throw new Error('Éléments HTML introuvables.');
-const statusElement = status;
 
 function setStatus(message: string, state: 'loading' | 'ready' | 'error' = 'loading') {
-  statusElement.textContent = message;
-  statusElement.dataset.state = state;
-}
-
-type Part = {
-  node: Container3D;
-  baseRotationX: number;
-  baseRotationZ: number;
-};
-
-function makeLykos() {
-  const root = new Container3D();
-  const orange = new Material3D({ baseColor: 0xc9783e, roughness: 0.96 });
-  const warmOrange = new Material3D({ baseColor: 0xa95b32, roughness: 1 });
-  const cream = new Material3D({ baseColor: 0xf0dfc3, roughness: 1 });
-  const pale = new Material3D({ baseColor: 0xf8ead5, roughness: 1 });
-  const dark = new Material3D({ baseColor: 0x49352f, roughness: 0.9 });
-  const blue = new Material3D({ baseColor: 0x55bde8, roughness: 0.42 });
-  const black = new Material3D({ baseColor: 0x211d22, roughness: 0.5 });
-  const green = new Material3D({ baseColor: 0x426c4c, roughness: 0.95 });
-  const gold = new Material3D({ baseColor: 0xd7ad64, roughness: 0.65 });
-  const sphere = new SphereGeometry({ radius: 1, widthSegments: 32, heightSegments: 24 });
-
-  function part(
-    parent: Container3D,
-    material: Material3D,
-    position: [number, number, number],
-    scale: [number, number, number],
-    rotation: [number, number, number] = [0, 0, 0],
-  ): Mesh3D {
-    const mesh = new Mesh3D({ geometry: sphere, material });
-    mesh.position.set(...position);
-    mesh.scale.set(...scale);
-    mesh.rotation.set(...rotation);
-    parent.addChild(mesh);
-    return mesh;
-  }
-
-  // Corps athlétique : ligne de dos horizontale, poitrine profonde et hanches solides.
-  part(root, orange, [0, 0.91, -0.02], [0.53, 0.53, 0.91]);
-  part(root, warmOrange, [0, 0.96, -0.48], [0.48, 0.49, 0.43]);
-  part(root, orange, [0, 1.02, 0.48], [0.52, 0.61, 0.48]);
-  part(root, cream, [0, 0.66, 0.38], [0.36, 0.34, 0.49]);
-  part(root, cream, [0, 0.98, 0.78], [0.34, 0.46, 0.2]);
-
-  // Épaules et collerette en mèches superposées pour donner du relief à la fourrure.
-  part(root, orange, [0, 1.23, 0.55], [0.48, 0.42, 0.38]);
-  for (const side of [-1, 1]) {
-    part(root, warmOrange, [side * 0.31, 1.08, 0.57], [0.19, 0.32, 0.22], [0, 0, side * -0.28]);
-    part(root, cream, [side * 0.2, 0.91, 0.82], [0.16, 0.29, 0.13], [side * 0.12, 0, side * -0.2]);
-    // Marques de fourrure sur les flancs et les épaules.
-    part(root, orange, [side * 0.43, 1.23, 0.28], [0.12, 0.23, 0.22], [0, 0, side * -0.35]);
-  }
-
-  // Tête de loup : crâne large, joues épaisses et museau plus court et carré.
-  const head = new Container3D();
-  head.position.set(0, 1.62, 0.66);
-  head.scale.set(1.04, 1.02, 1.04);
-  root.addChild(head);
-  part(head, orange, [0, 0.06, 0], [0.52, 0.43, 0.43]);
-  part(head, warmOrange, [0, -0.13, 0.22], [0.39, 0.25, 0.35]);
-  part(head, orange, [0, -0.15, 0.35], [0.34, 0.19, 0.31]);
-  part(head, cream, [0, -0.27, 0.43], [0.29, 0.12, 0.27]);
-  part(head, pale, [0, -0.31, 0.55], [0.22, 0.085, 0.18]);
-  part(head, black, [0, -0.16, 0.64], [0.105, 0.075, 0.09]);
-  part(head, cream, [0, 0.31, 0.25], [0.07, 0.12, 0.04]);
-
-  for (const side of [-1, 1]) {
-    // Joues épaisses et petites touffes latérales.
-    part(head, warmOrange, [side * 0.37, -0.13, 0.06], [0.19, 0.25, 0.25], [0, 0, side * -0.18]);
-    part(head, orange, [side * 0.4, -0.26, 0.12], [0.12, 0.16, 0.2], [0, 0, side * -0.35]);
-    // Yeux en amande, moins grands, avec arcade expressive.
-    part(head, dark, [side * 0.255, 0.12, 0.31], [0.135, 0.105, 0.075], [0, 0, side * -0.16]);
-    part(head, pale, [side * 0.255, 0.105, 0.365], [0.09, 0.072, 0.045]);
-    part(head, blue, [side * 0.255, 0.105, 0.402], [0.052, 0.058, 0.027]);
-    part(head, black, [side * 0.255, 0.105, 0.425], [0.025, 0.045, 0.018]);
-    part(head, pale, [side * 0.238, 0.13, 0.445], [0.014, 0.015, 0.009]);
-    part(head, warmOrange, [side * 0.255, 0.235, 0.28], [0.16, 0.055, 0.09], [0, 0, side * 0.12]);
-
-    // Oreilles plus courtes, larges à la base, implantées dans le crâne.
-    part(head, orange, [side * 0.34, 0.43, -0.08], [0.19, 0.29, 0.15], [0, 0, side * -0.12]);
-    part(head, warmOrange, [side * 0.34, 0.48, -0.005], [0.105, 0.2, 0.045], [0, 0, side * -0.12]);
-    part(head, dark, [side * 0.34, 0.46, 0.035], [0.065, 0.145, 0.025], [0, 0, side * -0.12]);
-  }
-
-  // Quatre membres longs, articulés et terminés par des pattes larges.
-  const legs: Part[] = [];
-  for (const x of [-0.34, 0.34]) {
-    for (const z of [-0.61, 0.59]) {
-      const leg = new Container3D();
-      leg.position.set(x, 0.72, z);
-      root.addChild(leg);
-      const front = z > 0;
-      part(leg, orange, [0, -0.25, 0], [front ? 0.145 : 0.16, 0.43, 0.15]);
-      part(leg, warmOrange, [0, -0.51, 0.025], [0.125, 0.19, 0.13]);
-      part(leg, cream, [0, -0.64, 0.095], [0.16, 0.095, 0.2]);
-      for (const toe of [-1, 0, 1]) {
-        part(leg, pale, [toe * 0.075, -0.655, 0.22], [0.045, 0.045, 0.075]);
-      }
-      legs.push({ node: leg, baseRotationX: 0, baseRotationZ: 0 });
-    }
-  }
-
-  // Queue épaisse, attachée à la croupe, avec dégradé crème à l'extrémité.
-  const tail = new Container3D();
-  tail.position.set(-0.12, 1.03, -0.78);
-  tail.scale.set(1.18, 1.1, 1.18);
-  tail.rotation.set(-0.16, -0.34, -0.08);
-  root.addChild(tail);
-  part(tail, warmOrange, [0, 0.02, -0.24], [0.3, 0.31, 0.48], [-0.18, 0, 0]);
-  part(tail, orange, [0, 0.08, -0.63], [0.32, 0.32, 0.58], [-0.22, 0, 0]);
-  part(tail, cream, [0, 0.2, -1.02], [0.23, 0.23, 0.31], [-0.3, 0, 0]);
-
-  // Sacoche latérale en cuir, avec rabat, coutures et boucle métallique.
-  part(root, dark, [0.45, 1.03, 0.27], [0.22, 0.25, 0.17], [0, 0, -0.1]);
-  part(root, green, [0.46, 1.04, 0.34], [0.2, 0.22, 0.15], [0, 0, -0.1]);
-  part(root, green, [0.46, 1.2, 0.34], [0.215, 0.07, 0.16], [0, 0, -0.08]);
-  part(root, gold, [0.47, 1.08, 0.495], [0.065, 0.075, 0.035]);
-  part(root, dark, [0.46, 1.08, 0.526], [0.025, 0.04, 0.018]);
-  part(root, gold, [0.32, 1.18, 0.37], [0.035, 0.18, 0.035], [0, 0, -0.4]);
-  part(root, gold, [0.59, 1.18, 0.37], [0.025, 0.17, 0.025], [0, 0, 0.4]);
-
-  return { root, head, tail, legs };
+  status.textContent = message;
+  status.dataset.state = state;
 }
 
 async function start(): Promise<void> {
+  setStatus('Chargement de Lykos…');
   const app = new Application();
   await app.init({
-    preference: 'webgl',
     antialias: true,
     background: '#b8d4d9',
     resizeTo: host!,
@@ -156,84 +24,90 @@ async function start(): Promise<void> {
   });
   host!.appendChild(app.canvas);
 
-  const view = new View3D({
-    autoResize: true,
-    background: 0xb8d4d9,
-    environment: { skyColor: 0xc5e3f2, groundColor: 0x617b62, intensity: 0.8 },
-  });
-  app.stage.addChild(view);
+  const texture = await Assets.load('/lykos.webp');
+  const lykos = new Sprite(texture);
+  lykos.anchor.set(0.5, 1);
+  lykos.eventMode = 'static';
+  lykos.cursor = 'grab';
+  app.stage.addChild(lykos);
 
-  const sun = new DirectionalLight({ intensity: 3, color: 0xfff1dc });
-  sun.position.set(-3, 5, 4);
-  sun.lookAt({ x: 0, y: 0.7, z: 0 });
-  view.root.addChild(sun);
+  const fit = () => {
+    const w = app.renderer.width;
+    const h = app.renderer.height;
+    const scale = Math.min((w * 0.92) / texture.width, (h * 0.88) / texture.height);
+    lykos.scale.set(scale);
+    lykos.position.set(w / 2, h * 0.94);
+  };
+  fit();
+  app.renderer.on('resize', fit);
 
-  view.camera.position.set(1.85, 1.55, 3.65);
-  // Une caméra 3D doit viser explicitement le compagnon : sa position seule
-  // ne garantit pas qu'elle regarde le centre de la scène.
-  view.camera.lookAt({ x: 0, y: 1.28, z: 0 });
-  new OrbitCamera({
-    view,
-    target: { x: 0, y: 1.28, z: 0 },
-    enableDamping: true,
-    minDistance: 2.2,
-    maxDistance: 8,
-  });
-
-  setStatus('Construction du compagnon…');
-  const lykos = makeLykos();
-  lykos.root.scale.set(1.28, 1.28, 1.28);
-  view.root.addChild(lykos.root);
-
-  type AnimationName = 'Idle' | 'Walk' | 'Run';
-  let currentAnimation: AnimationName = 'Idle';
+  type Clip = 'Idle' | 'Walk' | 'Run';
+  let clip: Clip = 'Idle';
   let elapsed = 0;
+  let baseX = 0;
+  let baseY = 0;
+  let pointerDown = false;
+  let lastPointerX = 0;
+  let dragRotation = 0;
 
-  function playClip(name: string) {
+  const play = (name: string) => {
     if (name !== 'Idle' && name !== 'Walk' && name !== 'Run') return;
-    currentAnimation = name;
+    clip = name;
     animationButtons.forEach((button) => {
       button.classList.toggle('active', button.dataset.clip === name);
     });
     setStatus('Lykos · ' + ({ Idle: 'observe', Walk: 'marche', Run: 'course' }[name]), 'ready');
-  }
+  };
 
   animationButtons.forEach((button) => {
     button.addEventListener('click', () => {
-      if (button.dataset.clip) playClip(button.dataset.clip);
+      if (button.dataset.clip) play(button.dataset.clip);
     });
   });
+
+  // L'illustration est conservée intacte : l'animation agit sur le sprite entier.
+  // Les mouvements indépendants des membres nécessiteront une version découpée en couches.
+  app.canvas.addEventListener('pointerdown', (event) => {
+    pointerDown = true;
+    lastPointerX = event.clientX;
+    app.canvas.setPointerCapture(event.pointerId);
+    app.canvas.style.cursor = 'grabbing';
+  });
+  app.canvas.addEventListener('pointermove', (event) => {
+    if (!pointerDown) return;
+    dragRotation += (event.clientX - lastPointerX) * 0.0015;
+    lastPointerX = event.clientX;
+  });
+  const release = () => {
+    pointerDown = false;
+    app.canvas.style.cursor = 'grab';
+  };
+  app.canvas.addEventListener('pointerup', release);
+  app.canvas.addEventListener('pointercancel', release);
+  app.canvas.addEventListener('lostpointercapture', release);
 
   app.ticker.add((ticker) => {
     elapsed += ticker.deltaMS / 1000;
-    const speed = currentAnimation === 'Run' ? 13 : currentAnimation === 'Walk' ? 7 : 2;
-    const amount = currentAnimation === 'Idle' ? 0.025 : currentAnimation === 'Run' ? 0.12 : 0.07;
-    const wave = Math.sin(elapsed * speed);
-
-    lykos.root.position.y = currentAnimation === 'Idle'
-      ? Math.sin(elapsed * 2) * 0.018
-      : Math.abs(wave) * amount;
-    lykos.root.rotation.y = currentAnimation === 'Idle'
-      ? Math.sin(elapsed * 0.7) * 0.035
-      : Math.sin(elapsed * speed * 0.5) * 0.035;
-    lykos.head.rotation.x = currentAnimation === 'Idle'
-      ? Math.sin(elapsed * 1.4) * 0.035
-      : Math.sin(elapsed * speed) * 0.045;
-    lykos.tail.rotation.x = -0.35 + Math.sin(elapsed * (currentAnimation === 'Run' ? 11 : 3)) * 0.16;
-    lykos.tail.rotation.z = Math.sin(elapsed * 2.4) * 0.12;
-
-    lykos.legs.forEach((leg, index) => {
-      const phase = index % 2 === 0 ? 0 : Math.PI;
-      const movement = currentAnimation === 'Idle' ? 0 : Math.sin(elapsed * speed + phase) * (currentAnimation === 'Run' ? 0.72 : 0.42);
-      leg.node.rotation.x = movement;
-    });
+    const wave = Math.sin(elapsed * (clip === 'Run' ? 12 : clip === 'Walk' ? 7 : 1.8));
+    const bounce = clip === 'Run' ? 0.024 : clip === 'Walk' ? 0.012 : 0.004;
+    const sway = clip === 'Run' ? 0.045 : clip === 'Walk' ? 0.025 : 0.008;
+    const stride = clip === 'Run' ? 0.018 : clip === 'Walk' ? 0.009 : 0;
+    baseX = app.renderer.width / 2;
+    baseY = app.renderer.height * 0.94;
+    lykos.position.x = baseX + (clip === 'Idle' ? Math.sin(elapsed * 0.55) * 2 : Math.sin(elapsed * 3) * app.renderer.width * stride);
+    lykos.position.y = baseY - Math.abs(wave) * app.renderer.height * bounce;
+    lykos.rotation = Math.sin(elapsed * (clip === 'Idle' ? 0.7 : 4)) * sway + dragRotation;
+    const breathing = clip === 'Idle' ? 1 + Math.sin(elapsed * 1.7) * 0.004 : 1;
+    const pulse = clip === 'Run' ? 1 + Math.abs(wave) * 0.008 : 1;
+    const s = Math.min((app.renderer.width * 0.92) / texture.width, (app.renderer.height * 0.88) / texture.height);
+    lykos.scale.set(s * breathing * pulse, s * (2 - breathing * pulse));
   });
 
-  playClip('Idle');
-  setStatus('Lykos est prêt · fais glisser pour tourner autour de lui.', 'ready');
+  play('Idle');
+  setStatus('Lykos est prêt · fais glisser pour le faire pivoter.', 'ready');
 }
 
 start().catch((error: unknown) => {
   console.error(error);
-  setStatus('Impossible de construire Lykos. Consulte la console pour le détail.', 'error');
+  setStatus('Impossible de charger Lykos. Consulte la console pour le détail.', 'error');
 });
