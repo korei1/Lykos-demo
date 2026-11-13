@@ -57,13 +57,14 @@ function makeLykos() {
   }
 
   // Corps et ventre
-  part(root, orange, [0, 0.78, 0], [0.48, 0.57, 0.78]);
+  part(root, orange, [0, 0.78, 0], [0.52, 0.6, 0.72]);
   part(root, cream, [0, 0.58, 0.57], [0.34, 0.34, 0.25]);
 
   // Poitrine et tête
   part(root, cream, [0, 1.02, 0.58], [0.3, 0.38, 0.22]);
   const head = new Container3D();
-  head.position.set(0, 1.48, 0.48);
+  head.position.set(0, 1.52, 0.48);
+  head.scale.set(1.08, 1.08, 1.08);
   root.addChild(head);
   part(head, orange, [0, 0.12, 0], [0.43, 0.42, 0.4]);
   part(head, cream, [0, -0.08, 0.31], [0.29, 0.2, 0.22]);
@@ -97,7 +98,8 @@ function makeLykos() {
 
   // Queue touffue, en plusieurs volumes pour une silhouette plus douce
   const tail = new Container3D();
-  tail.position.set(0, 0.94, -0.62);
+  tail.position.set(-0.08, 0.98, -0.55);
+  tail.scale.set(1.18, 1.12, 1.12);
   tail.rotation.x = -0.35;
   root.addChild(tail);
   part(tail, orange, [0, 0.05, -0.32], [0.27, 0.28, 0.53], [-0.45, 0, 0]);
@@ -136,20 +138,21 @@ async function start(): Promise<void> {
   sun.lookAt({ x: 0, y: 0.7, z: 0 });
   view.root.addChild(sun);
 
-  view.camera.position.set(0, 1.35, 4.1);
+  view.camera.position.set(2.25, 1.75, 4.15);
   // Une caméra 3D doit viser explicitement le compagnon : sa position seule
   // ne garantit pas qu'elle regarde le centre de la scène.
-  view.camera.lookAt({ x: 0, y: 1, z: 0 });
+  view.camera.lookAt({ x: 0, y: 1.05, z: 0 });
   new OrbitCamera({
     view,
-    target: { x: 0, y: 1, z: 0 },
+    target: { x: 0, y: 1.05, z: 0 },
     enableDamping: true,
-    minDistance: 2,
+    minDistance: 2.4,
     maxDistance: 8,
   });
 
   setStatus('Construction du compagnon…');
   const lykos = makeLykos();
+  lykos.root.scale.set(1.18, 1.18, 1.18);
   view.root.addChild(lykos.root);
 
   type AnimationName = 'Idle' | 'Walk' | 'Run';
