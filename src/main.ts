@@ -69,6 +69,11 @@ function makeLykos() {
   part(head, orange, [0, 0.12, 0], [0.43, 0.42, 0.4]);
   part(head, cream, [0, -0.08, 0.31], [0.29, 0.2, 0.22]);
   part(head, cream, [0, -0.18, 0.43], [0.2, 0.12, 0.16]);
+  // Petite flamme ivoire sur le front et joues qui adoucissent le museau
+  part(head, cream, [0, 0.34, 0.365], [0.075, 0.14, 0.055]);
+  for (const side of [-1, 1]) {
+    part(head, cream, [side * 0.19, -0.105, 0.36], [0.12, 0.105, 0.105]);
+  }
   part(head, black, [0, -0.12, 0.57], [0.075, 0.06, 0.07]);
 
   // Yeux bleus, pupilles et reflets
@@ -79,8 +84,8 @@ function makeLykos() {
     part(head, cream, [side * 0.22 - 0.018, 0.205, 0.46], [0.018, 0.022, 0.012]);
 
     // Oreilles dressées
-    part(head, orange, [side * 0.27, 0.53, -0.015], [0.16, 0.34, 0.13], [0, 0, side * -0.2]);
-    part(head, dark, [side * 0.27, 0.55, 0.09], [0.075, 0.22, 0.035], [0, 0, side * -0.2]);
+    part(head, orange, [side * 0.27, 0.54, -0.015], [0.135, 0.37, 0.115], [0, 0, side * -0.23]);
+    part(head, dark, [side * 0.27, 0.56, 0.09], [0.065, 0.245, 0.035], [0, 0, side * -0.23]);
   }
 
   // Pattes articulées
@@ -98,13 +103,14 @@ function makeLykos() {
 
   // Queue touffue, en plusieurs volumes pour une silhouette plus douce
   const tail = new Container3D();
-  tail.position.set(-0.08, 0.98, -0.55);
-  tail.scale.set(1.18, 1.12, 1.12);
-  tail.rotation.x = -0.35;
+  tail.position.set(-0.42, 0.98, -0.3);
+  tail.scale.set(1.3, 1.22, 1.25);
+  tail.rotation.set(-0.28, -0.82, -0.12);
   root.addChild(tail);
-  part(tail, orange, [0, 0.05, -0.32], [0.27, 0.28, 0.53], [-0.45, 0, 0]);
-  part(tail, orange, [0, 0.19, -0.68], [0.23, 0.23, 0.34], [-0.5, 0, 0]);
-  part(tail, cream, [0, 0.31, -0.91], [0.18, 0.18, 0.22], [-0.5, 0, 0]);
+  part(tail, orange, [0, 0.02, -0.28], [0.3, 0.31, 0.48], [-0.42, 0, 0]);
+  part(tail, orange, [0, 0.16, -0.58], [0.28, 0.27, 0.4], [-0.48, 0, 0]);
+  part(tail, orange, [0, 0.27, -0.82], [0.23, 0.23, 0.3], [-0.5, 0, 0]);
+  part(tail, cream, [0, 0.38, -1.02], [0.19, 0.19, 0.23], [-0.5, 0, 0]);
 
   // Sacoche de voyage décalée vers le flanc visible depuis la caméra
   part(root, green, [0.42, 0.91, 0.34], [0.2, 0.23, 0.14], [0, 0, -0.12]);
