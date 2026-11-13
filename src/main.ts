@@ -38,7 +38,6 @@ function makeLykos() {
   const black = new Material3D({ baseColor: 0x211d22, roughness: 0.55 });
   const green = new Material3D({ baseColor: 0x4f8054, roughness: 0.95 });
   const gold = new Material3D({ baseColor: 0xd9ad55, roughness: 0.7 });
-
   const sphere = new SphereGeometry({ radius: 1, widthSegments: 24, heightSegments: 16 });
 
   function part(
@@ -56,62 +55,64 @@ function makeLykos() {
     return mesh;
   }
 
-  // Corps et ventre
-  part(root, orange, [0, 0.78, 0], [0.52, 0.6, 0.72]);
-  part(root, cream, [0, 0.58, 0.57], [0.34, 0.34, 0.25]);
+  // Silhouette de loup : corps long, épaules hautes et poitrail puissant.
+  part(root, orange, [0, 0.88, -0.02], [0.55, 0.57, 0.9]);
+  part(root, cream, [0, 0.66, 0.55], [0.37, 0.39, 0.34]);
+  part(root, orange, [0, 1.04, 0.48], [0.48, 0.62, 0.43]);
+  part(root, cream, [0, 0.99, 0.79], [0.31, 0.43, 0.18]);
 
-  // Poitrine et tête
-  part(root, cream, [0, 1.02, 0.58], [0.3, 0.38, 0.22]);
+  // Tête plus large et allongée, avec un museau de canidé plutôt que de renard.
   const head = new Container3D();
-  head.position.set(0, 1.52, 0.48);
-  head.scale.set(1.08, 1.08, 1.08);
+  head.position.set(0, 1.62, 0.62);
+  head.scale.set(1.12, 1.08, 1.12);
   root.addChild(head);
-  part(head, orange, [0, 0.12, 0], [0.43, 0.42, 0.4]);
-  part(head, cream, [0, -0.08, 0.31], [0.29, 0.2, 0.22]);
-  part(head, cream, [0, -0.18, 0.43], [0.2, 0.12, 0.16]);
-  // Petite marque ivoire intégrée à la surface du front
-  part(head, cream, [0, 0.31, 0.255], [0.052, 0.105, 0.025]);
-  part(head, black, [0, -0.12, 0.57], [0.075, 0.06, 0.07]);
+  part(head, orange, [0, 0.08, 0], [0.49, 0.43, 0.43]);
+  part(head, orange, [0, -0.12, 0.32], [0.34, 0.22, 0.39]);
+  part(head, cream, [0, -0.24, 0.48], [0.27, 0.13, 0.31]);
+  part(head, cream, [0, -0.29, 0.62], [0.205, 0.095, 0.22]);
+  part(head, black, [0, -0.19, 0.79], [0.085, 0.065, 0.075]);
+  // Petite marque claire sur le front.
+  part(head, cream, [0, 0.31, 0.27], [0.055, 0.11, 0.035]);
 
-  // Yeux bleus, pupilles et reflets
+  // Yeux bleus, légèrement plus étroits pour une expression de loup.
   for (const side of [-1, 1]) {
-    part(head, cream, [side * 0.2, 0.17, 0.325], [0.12, 0.15, 0.09]);
-    part(head, blue, [side * 0.2, 0.17, 0.402], [0.073, 0.095, 0.045]);
-    part(head, black, [side * 0.2, 0.17, 0.438], [0.033, 0.065, 0.025]);
-    part(head, cream, [side * 0.22 - 0.018, 0.205, 0.46], [0.018, 0.022, 0.012]);
+    part(head, cream, [side * 0.235, 0.13, 0.31], [0.125, 0.135, 0.09]);
+    part(head, blue, [side * 0.235, 0.13, 0.39], [0.075, 0.085, 0.045]);
+    part(head, black, [side * 0.235, 0.13, 0.428], [0.034, 0.06, 0.025]);
+    part(head, cream, [side * 0.215, 0.165, 0.45], [0.018, 0.02, 0.012]);
 
-    // Oreilles dressées
-    part(head, orange, [side * 0.27, 0.54, -0.015], [0.135, 0.37, 0.115], [0, 0, side * -0.23]);
-    part(head, dark, [side * 0.27, 0.56, 0.09], [0.065, 0.245, 0.035], [0, 0, side * -0.23]);
+    // Oreilles hautes, triangulaires dans leur silhouette.
+    part(head, orange, [side * 0.31, 0.53, -0.035], [0.145, 0.39, 0.12], [0, 0, side * -0.18]);
+    part(head, dark, [side * 0.31, 0.55, 0.065], [0.07, 0.25, 0.035], [0, 0, side * -0.18]);
   }
 
-  // Pattes articulées
+  // Quatre pattes plus longues et solides, avec des pieds compacts.
   const legs: Part[] = [];
-  for (const x of [-0.29, 0.29]) {
-    for (const z of [-0.43, 0.48]) {
+  for (const x of [-0.34, 0.34]) {
+    for (const z of [-0.61, 0.58]) {
       const leg = new Container3D();
-      leg.position.set(x, 0.58, z);
+      leg.position.set(x, 0.72, z);
       root.addChild(leg);
-      part(leg, orange, [0, -0.19, 0], [0.125, 0.31, 0.135]);
-      part(leg, cream, [0, -0.43, 0.055], [0.135, 0.085, 0.205]);
+      part(leg, orange, [0, -0.27, 0], [0.135, 0.43, 0.145]);
+      part(leg, cream, [0, -0.59, 0.075], [0.14, 0.085, 0.19]);
       legs.push({ node: leg, baseRotationX: 0, baseRotationZ: 0 });
     }
   }
 
-  // Queue touffue : deux volumes fondus visuellement et une pointe claire
+  // Queue longue et dense, portée dans le prolongement de la ligne du dos.
   const tail = new Container3D();
-  tail.position.set(-0.42, 0.98, -0.3);
-  tail.scale.set(1.3, 1.22, 1.25);
-  tail.rotation.set(-0.28, -0.82, -0.12);
+  tail.position.set(-0.43, 1.03, -0.58);
+  tail.scale.set(1.28, 1.18, 1.3);
+  tail.rotation.set(-0.2, -0.72, -0.12);
   root.addChild(tail);
-  part(tail, orange, [0, 0.12, -0.52], [0.34, 0.34, 0.72], [-0.38, 0, 0]);
-  part(tail, cream, [0, 0.36, -1.08], [0.2, 0.2, 0.27], [-0.42, 0, 0]);
+  part(tail, orange, [0, 0.02, -0.55], [0.36, 0.34, 0.78], [-0.24, 0, 0]);
+  part(tail, cream, [0, 0.2, -1.16], [0.23, 0.22, 0.3], [-0.3, 0, 0]);
 
-  // Sacoche de voyage décalée vers le flanc visible depuis la caméra
-  part(root, green, [0.42, 0.91, 0.34], [0.2, 0.23, 0.14], [0, 0, -0.12]);
-  part(root, gold, [0.47, 0.91, 0.475], [0.06, 0.07, 0.035]);
-  part(root, dark, [0.42, 1.12, 0.34], [0.205, 0.04, 0.145]);
-  part(root, gold, [0.34, 1.08, 0.39], [0.035, 0.17, 0.035], [0, 0, -0.42]);
+  // Sacoche conservée sur le flanc.
+  part(root, green, [0.43, 1.02, 0.34], [0.2, 0.23, 0.15], [0, 0, -0.12]);
+  part(root, gold, [0.48, 1.02, 0.495], [0.06, 0.07, 0.035]);
+  part(root, dark, [0.43, 1.23, 0.34], [0.205, 0.04, 0.15]);
+  part(root, gold, [0.35, 1.19, 0.39], [0.035, 0.17, 0.035], [0, 0, -0.42]);
 
   return { root, head, tail, legs };
 }
