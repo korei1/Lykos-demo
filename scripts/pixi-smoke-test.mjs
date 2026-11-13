@@ -7,6 +7,7 @@ const port = 4173;
 const url = `http://127.0.0.1:${port}`;
 const server = spawn('npm', ['run', 'dev', '--', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
   stdio: ['ignore', 'pipe', 'pipe'],
+  detached: true,
 });
 let serverOutput = '';
 server.stdout.on('data', (chunk) => { serverOutput += chunk.toString(); });
@@ -82,5 +83,10 @@ try {
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close();
-  server.kill('SIGTERM');
+  // npm lance Vite comme processus enfant : arrêter tout le groupe évite
+  // que le runner GitHub Actions reste bloqué après la réussite du test.
+  if (server.pid && server.exitCode === null) {
+    try { process.kill(-server.pid, 'SIGTERM'); }
+    catch { server.kill('SIGTERM'); }
+  }
 }
