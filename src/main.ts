@@ -25,7 +25,7 @@ async function start(): Promise<void> {
   });
   host!.appendChild(app.canvas);
 
-  const texture = await Assets.load('/lykos.webp');
+  const texture = await Assets.load(`${import.meta.env.BASE_URL}lykos.webp`);
   const lykos = new Sprite(texture);
   lykos.anchor.set(0.5, 1);
   lykos.eventMode = 'static';
