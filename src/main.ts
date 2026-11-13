@@ -69,11 +69,8 @@ function makeLykos() {
   part(head, orange, [0, 0.12, 0], [0.43, 0.42, 0.4]);
   part(head, cream, [0, -0.08, 0.31], [0.29, 0.2, 0.22]);
   part(head, cream, [0, -0.18, 0.43], [0.2, 0.12, 0.16]);
-  // Petite flamme ivoire sur le front et joues qui adoucissent le museau
-  part(head, cream, [0, 0.34, 0.365], [0.075, 0.14, 0.055]);
-  for (const side of [-1, 1]) {
-    part(head, cream, [side * 0.19, -0.105, 0.36], [0.12, 0.105, 0.105]);
-  }
+  // Petite marque ivoire intégrée à la surface du front
+  part(head, cream, [0, 0.31, 0.255], [0.052, 0.105, 0.025]);
   part(head, black, [0, -0.12, 0.57], [0.075, 0.06, 0.07]);
 
   // Yeux bleus, pupilles et reflets
@@ -101,16 +98,15 @@ function makeLykos() {
     }
   }
 
-  // Queue touffue, en plusieurs volumes pour une silhouette plus douce
+  // Queue touffue : deux volumes fondus visuellement et une pointe claire
   const tail = new Container3D();
   tail.position.set(-0.42, 0.98, -0.3);
   tail.scale.set(1.3, 1.22, 1.25);
   tail.rotation.set(-0.28, -0.82, -0.12);
   root.addChild(tail);
-  part(tail, orange, [0, 0.02, -0.28], [0.3, 0.31, 0.48], [-0.42, 0, 0]);
-  part(tail, orange, [0, 0.16, -0.58], [0.28, 0.27, 0.4], [-0.48, 0, 0]);
-  part(tail, orange, [0, 0.27, -0.82], [0.23, 0.23, 0.3], [-0.5, 0, 0]);
-  part(tail, cream, [0, 0.38, -1.02], [0.19, 0.19, 0.23], [-0.5, 0, 0]);
+  part(tail, orange, [0, 0.05, -0.38], [0.32, 0.32, 0.58], [-0.36, 0, 0]);
+  part(tail, orange, [0, 0.25, -0.78], [0.25, 0.25, 0.38], [-0.42, 0, 0]);
+  part(tail, cream, [0, 0.39, -1.04], [0.19, 0.19, 0.23], [-0.42, 0, 0]);
 
   // Sacoche de voyage décalée vers le flanc visible depuis la caméra
   part(root, green, [0.42, 0.91, 0.34], [0.2, 0.23, 0.14], [0, 0, -0.12]);
