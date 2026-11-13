@@ -136,6 +136,9 @@ async function start(): Promise<void> {
   view.root.addChild(sun);
 
   view.camera.position.set(0, 1.35, 4.1);
+  // Une caméra 3D doit viser explicitement le compagnon : sa position seule
+  // ne garantit pas qu'elle regarde le centre de la scène.
+  view.camera.lookAt({ x: 0, y: 1, z: 0 });
   new OrbitCamera({
     view,
     target: { x: 0, y: 1, z: 0 },
