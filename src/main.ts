@@ -104,9 +104,8 @@ function makeLykos() {
   tail.scale.set(1.3, 1.22, 1.25);
   tail.rotation.set(-0.28, -0.82, -0.12);
   root.addChild(tail);
-  part(tail, orange, [0, 0.05, -0.38], [0.32, 0.32, 0.58], [-0.36, 0, 0]);
-  part(tail, orange, [0, 0.25, -0.78], [0.25, 0.25, 0.38], [-0.42, 0, 0]);
-  part(tail, cream, [0, 0.39, -1.04], [0.19, 0.19, 0.23], [-0.42, 0, 0]);
+  part(tail, orange, [0, 0.12, -0.52], [0.34, 0.34, 0.72], [-0.38, 0, 0]);
+  part(tail, cream, [0, 0.36, -1.08], [0.2, 0.2, 0.27], [-0.42, 0, 0]);
 
   // Sacoche de voyage décalée vers le flanc visible depuis la caméra
   part(root, green, [0.42, 0.91, 0.34], [0.2, 0.23, 0.14], [0, 0, -0.12]);
@@ -144,10 +143,10 @@ async function start(): Promise<void> {
   view.camera.position.set(1.85, 1.55, 3.65);
   // Une caméra 3D doit viser explicitement le compagnon : sa position seule
   // ne garantit pas qu'elle regarde le centre de la scène.
-  view.camera.lookAt({ x: 0, y: 1.08, z: 0 });
+  view.camera.lookAt({ x: 0, y: 1.28, z: 0 });
   new OrbitCamera({
     view,
-    target: { x: 0, y: 1.08, z: 0 },
+    target: { x: 0, y: 1.28, z: 0 },
     enableDamping: true,
     minDistance: 2.2,
     maxDistance: 8,
