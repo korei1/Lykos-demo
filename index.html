@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101827" />
+    <title>Lykos — compagnon 3D</title>
+  </head>
+  <body>
+    <main id="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">DÉMONSTRATION 3D</p>
+          <h1>Lykos <span>Compagnon 3D</span></h1>
+        </div>
+        <p id="status" class="status" role="status">Initialisation…</p>
+      </header>
+      <section class="stage" aria-label="Aperçu 3D du compagnon">
+        <div id="canvas-host"></div>
+        <div class="hint">Glisse pour faire tourner la caméra · Pince pour zoomer</div>
+      </section>
+      <nav class="controls" aria-label="Animations du compagnon">
+        <button type="button" data-clip="Idle" class="active">Observer</button>
+        <button type="button" data-clip="Walk">Marcher</button>
+        <button type="button" data-clip="Run">Courir</button>
+      </nav>
+      <footer>Prototype interactif Lykos · PixiJS 3D</footer>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
