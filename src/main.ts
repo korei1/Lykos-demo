@@ -16,10 +16,11 @@ const status = document.querySelector<HTMLParagraphElement>('#status');
 const animationButtons = document.querySelectorAll<HTMLButtonElement>('[data-clip]');
 
 if (!host || !status) throw new Error('Éléments HTML introuvables.');
+const statusElement = status;
 
 function setStatus(message: string, state: 'loading' | 'ready' | 'error' = 'loading') {
-  status.textContent = message;
-  status.dataset.state = state;
+  statusElement.textContent = message;
+  statusElement.dataset.state = state;
 }
 
 type Part = {
