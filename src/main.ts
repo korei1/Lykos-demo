@@ -106,10 +106,11 @@ function makeLykos() {
   part(tail, orange, [0, 0.19, -0.68], [0.23, 0.23, 0.34], [-0.5, 0, 0]);
   part(tail, cream, [0, 0.31, -0.91], [0.18, 0.18, 0.22], [-0.5, 0, 0]);
 
-  // Sacoche de voyage verte sur le flanc
-  part(root, green, [0.39, 0.91, -0.08], [0.19, 0.23, 0.24], [0, 0, -0.12]);
-  part(root, gold, [0.49, 0.91, 0.12], [0.055, 0.065, 0.035]);
-  part(root, dark, [0.4, 1.12, -0.08], [0.2, 0.035, 0.22]);
+  // Sacoche de voyage décalée vers le flanc visible depuis la caméra
+  part(root, green, [0.42, 0.91, 0.34], [0.2, 0.23, 0.14], [0, 0, -0.12]);
+  part(root, gold, [0.47, 0.91, 0.475], [0.06, 0.07, 0.035]);
+  part(root, dark, [0.42, 1.12, 0.34], [0.205, 0.04, 0.145]);
+  part(root, gold, [0.34, 1.08, 0.39], [0.035, 0.17, 0.035], [0, 0, -0.42]);
 
   return { root, head, tail, legs };
 }
@@ -138,21 +139,21 @@ async function start(): Promise<void> {
   sun.lookAt({ x: 0, y: 0.7, z: 0 });
   view.root.addChild(sun);
 
-  view.camera.position.set(2.25, 1.75, 4.15);
+  view.camera.position.set(1.85, 1.55, 3.65);
   // Une caméra 3D doit viser explicitement le compagnon : sa position seule
   // ne garantit pas qu'elle regarde le centre de la scène.
-  view.camera.lookAt({ x: 0, y: 1.05, z: 0 });
+  view.camera.lookAt({ x: 0, y: 1.08, z: 0 });
   new OrbitCamera({
     view,
-    target: { x: 0, y: 1.05, z: 0 },
+    target: { x: 0, y: 1.08, z: 0 },
     enableDamping: true,
-    minDistance: 2.4,
+    minDistance: 2.2,
     maxDistance: 8,
   });
 
   setStatus('Construction du compagnon…');
   const lykos = makeLykos();
-  lykos.root.scale.set(1.18, 1.18, 1.18);
+  lykos.root.scale.set(1.28, 1.28, 1.28);
   view.root.addChild(lykos.root);
 
   type AnimationName = 'Idle' | 'Walk' | 'Run';
