@@ -115,7 +115,7 @@ function makeLykos() {
 async function start(): Promise<void> {
   const app = new Application();
   await app.init({
-    preference: 'webgpu',
+    preference: 'webgl',
     antialias: true,
     background: '#b8d4d9',
     resizeTo: host!,
@@ -126,6 +126,7 @@ async function start(): Promise<void> {
 
   const view = new View3D({
     autoResize: true,
+    background: 0xb8d4d9,
     environment: { skyColor: 0xc5e3f2, groundColor: 0x617b62, intensity: 0.8 },
   });
   app.stage.addChild(view);
