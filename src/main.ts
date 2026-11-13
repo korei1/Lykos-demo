@@ -31,14 +31,16 @@ type Part = {
 
 function makeLykos() {
   const root = new Container3D();
-  const orange = new Material3D({ baseColor: 0xd97835, roughness: 0.92 });
-  const cream = new Material3D({ baseColor: 0xf5dfb8, roughness: 1 });
-  const dark = new Material3D({ baseColor: 0x493126, roughness: 0.85 });
-  const blue = new Material3D({ baseColor: 0x55bde8, roughness: 0.45 });
-  const black = new Material3D({ baseColor: 0x211d22, roughness: 0.55 });
-  const green = new Material3D({ baseColor: 0x4f8054, roughness: 0.95 });
-  const gold = new Material3D({ baseColor: 0xd9ad55, roughness: 0.7 });
-  const sphere = new SphereGeometry({ radius: 1, widthSegments: 24, heightSegments: 16 });
+  const orange = new Material3D({ baseColor: 0xc9783e, roughness: 0.96 });
+  const warmOrange = new Material3D({ baseColor: 0xa95b32, roughness: 1 });
+  const cream = new Material3D({ baseColor: 0xf0dfc3, roughness: 1 });
+  const pale = new Material3D({ baseColor: 0xf8ead5, roughness: 1 });
+  const dark = new Material3D({ baseColor: 0x49352f, roughness: 0.9 });
+  const blue = new Material3D({ baseColor: 0x55bde8, roughness: 0.42 });
+  const black = new Material3D({ baseColor: 0x211d22, roughness: 0.5 });
+  const green = new Material3D({ baseColor: 0x426c4c, roughness: 0.95 });
+  const gold = new Material3D({ baseColor: 0xd7ad64, roughness: 0.65 });
+  const sphere = new SphereGeometry({ radius: 1, widthSegments: 32, heightSegments: 24 });
 
   function part(
     parent: Container3D,
@@ -55,64 +57,89 @@ function makeLykos() {
     return mesh;
   }
 
-  // Silhouette de loup : corps long, épaules hautes et poitrail puissant.
-  part(root, orange, [0, 0.88, -0.02], [0.55, 0.57, 0.9]);
-  part(root, cream, [0, 0.66, 0.55], [0.37, 0.39, 0.34]);
-  part(root, orange, [0, 1.04, 0.48], [0.48, 0.62, 0.43]);
-  part(root, cream, [0, 0.99, 0.79], [0.31, 0.43, 0.18]);
+  // Corps athlétique : ligne de dos horizontale, poitrine profonde et hanches solides.
+  part(root, orange, [0, 0.91, -0.02], [0.53, 0.53, 0.91]);
+  part(root, warmOrange, [0, 0.96, -0.48], [0.48, 0.49, 0.43]);
+  part(root, orange, [0, 1.02, 0.48], [0.52, 0.61, 0.48]);
+  part(root, cream, [0, 0.66, 0.38], [0.36, 0.34, 0.49]);
+  part(root, cream, [0, 0.98, 0.78], [0.34, 0.46, 0.2]);
 
-  // Tête plus large et allongée, avec un museau de canidé plutôt que de renard.
-  const head = new Container3D();
-  head.position.set(0, 1.62, 0.62);
-  head.scale.set(1.12, 1.08, 1.12);
-  root.addChild(head);
-  part(head, orange, [0, 0.08, 0], [0.49, 0.43, 0.43]);
-  part(head, orange, [0, -0.12, 0.32], [0.34, 0.22, 0.39]);
-  part(head, cream, [0, -0.24, 0.48], [0.27, 0.13, 0.31]);
-  part(head, cream, [0, -0.29, 0.62], [0.205, 0.095, 0.22]);
-  part(head, black, [0, -0.19, 0.79], [0.085, 0.065, 0.075]);
-  // Petite marque claire sur le front.
-  part(head, cream, [0, 0.31, 0.27], [0.055, 0.11, 0.035]);
-
-  // Yeux bleus, légèrement plus étroits pour une expression de loup.
+  // Épaules et collerette en mèches superposées pour donner du relief à la fourrure.
+  part(root, orange, [0, 1.23, 0.55], [0.48, 0.42, 0.38]);
   for (const side of [-1, 1]) {
-    part(head, cream, [side * 0.235, 0.13, 0.31], [0.125, 0.135, 0.09]);
-    part(head, blue, [side * 0.235, 0.13, 0.39], [0.075, 0.085, 0.045]);
-    part(head, black, [side * 0.235, 0.13, 0.428], [0.034, 0.06, 0.025]);
-    part(head, cream, [side * 0.215, 0.165, 0.45], [0.018, 0.02, 0.012]);
-
-    // Oreilles hautes, triangulaires dans leur silhouette.
-    part(head, orange, [side * 0.31, 0.53, -0.035], [0.145, 0.39, 0.12], [0, 0, side * -0.18]);
-    part(head, dark, [side * 0.31, 0.55, 0.065], [0.07, 0.25, 0.035], [0, 0, side * -0.18]);
+    part(root, warmOrange, [side * 0.31, 1.08, 0.57], [0.19, 0.32, 0.22], [0, 0, side * -0.28]);
+    part(root, cream, [side * 0.2, 0.91, 0.82], [0.16, 0.29, 0.13], [side * 0.12, 0, side * -0.2]);
+    // Marques de fourrure sur les flancs et les épaules.
+    part(root, orange, [side * 0.43, 1.23, 0.28], [0.12, 0.23, 0.22], [0, 0, side * -0.35]);
   }
 
-  // Quatre pattes plus longues et solides, avec des pieds compacts.
+  // Tête de loup : crâne large, joues épaisses et museau plus court et carré.
+  const head = new Container3D();
+  head.position.set(0, 1.62, 0.66);
+  head.scale.set(1.04, 1.02, 1.04);
+  root.addChild(head);
+  part(head, orange, [0, 0.06, 0], [0.52, 0.43, 0.43]);
+  part(head, warmOrange, [0, -0.13, 0.22], [0.39, 0.25, 0.35]);
+  part(head, orange, [0, -0.15, 0.35], [0.34, 0.19, 0.31]);
+  part(head, cream, [0, -0.27, 0.43], [0.29, 0.12, 0.27]);
+  part(head, pale, [0, -0.31, 0.55], [0.22, 0.085, 0.18]);
+  part(head, black, [0, -0.16, 0.64], [0.105, 0.075, 0.09]);
+  part(head, cream, [0, 0.31, 0.25], [0.07, 0.12, 0.04]);
+
+  for (const side of [-1, 1]) {
+    // Joues épaisses et petites touffes latérales.
+    part(head, warmOrange, [side * 0.37, -0.13, 0.06], [0.19, 0.25, 0.25], [0, 0, side * -0.18]);
+    part(head, orange, [side * 0.4, -0.26, 0.12], [0.12, 0.16, 0.2], [0, 0, side * -0.35]);
+    // Yeux en amande, moins grands, avec arcade expressive.
+    part(head, dark, [side * 0.255, 0.12, 0.31], [0.135, 0.105, 0.075], [0, 0, side * -0.16]);
+    part(head, pale, [side * 0.255, 0.105, 0.365], [0.09, 0.072, 0.045]);
+    part(head, blue, [side * 0.255, 0.105, 0.402], [0.052, 0.058, 0.027]);
+    part(head, black, [side * 0.255, 0.105, 0.425], [0.025, 0.045, 0.018]);
+    part(head, pale, [side * 0.238, 0.13, 0.445], [0.014, 0.015, 0.009]);
+    part(head, warmOrange, [side * 0.255, 0.235, 0.28], [0.16, 0.055, 0.09], [0, 0, side * 0.12]);
+
+    // Oreilles plus courtes, larges à la base, implantées dans le crâne.
+    part(head, orange, [side * 0.34, 0.43, -0.08], [0.19, 0.29, 0.15], [0, 0, side * -0.12]);
+    part(head, warmOrange, [side * 0.34, 0.48, -0.005], [0.105, 0.2, 0.045], [0, 0, side * -0.12]);
+    part(head, dark, [side * 0.34, 0.46, 0.035], [0.065, 0.145, 0.025], [0, 0, side * -0.12]);
+  }
+
+  // Quatre membres longs, articulés et terminés par des pattes larges.
   const legs: Part[] = [];
   for (const x of [-0.34, 0.34]) {
-    for (const z of [-0.61, 0.58]) {
+    for (const z of [-0.61, 0.59]) {
       const leg = new Container3D();
       leg.position.set(x, 0.72, z);
       root.addChild(leg);
-      part(leg, orange, [0, -0.27, 0], [0.135, 0.43, 0.145]);
-      part(leg, cream, [0, -0.59, 0.075], [0.14, 0.085, 0.19]);
+      const front = z > 0;
+      part(leg, orange, [0, -0.25, 0], [front ? 0.145 : 0.16, 0.43, 0.15]);
+      part(leg, warmOrange, [0, -0.51, 0.025], [0.125, 0.19, 0.13]);
+      part(leg, cream, [0, -0.64, 0.095], [0.16, 0.095, 0.2]);
+      for (const toe of [-1, 0, 1]) {
+        part(leg, pale, [toe * 0.075, -0.655, 0.22], [0.045, 0.045, 0.075]);
+      }
       legs.push({ node: leg, baseRotationX: 0, baseRotationZ: 0 });
     }
   }
 
-  // Queue longue et dense, portée dans le prolongement de la ligne du dos.
+  // Queue épaisse, attachée à la croupe, avec dégradé crème à l'extrémité.
   const tail = new Container3D();
-  tail.position.set(-0.43, 1.03, -0.58);
-  tail.scale.set(1.28, 1.18, 1.3);
-  tail.rotation.set(-0.2, -0.72, -0.12);
+  tail.position.set(-0.12, 1.03, -0.78);
+  tail.scale.set(1.18, 1.1, 1.18);
+  tail.rotation.set(-0.16, -0.34, -0.08);
   root.addChild(tail);
-  part(tail, orange, [0, 0.02, -0.55], [0.36, 0.34, 0.78], [-0.24, 0, 0]);
-  part(tail, cream, [0, 0.2, -1.16], [0.23, 0.22, 0.3], [-0.3, 0, 0]);
+  part(tail, warmOrange, [0, 0.02, -0.24], [0.3, 0.31, 0.48], [-0.18, 0, 0]);
+  part(tail, orange, [0, 0.08, -0.63], [0.32, 0.32, 0.58], [-0.22, 0, 0]);
+  part(tail, cream, [0, 0.2, -1.02], [0.23, 0.23, 0.31], [-0.3, 0, 0]);
 
-  // Sacoche conservée sur le flanc.
-  part(root, green, [0.43, 1.02, 0.34], [0.2, 0.23, 0.15], [0, 0, -0.12]);
-  part(root, gold, [0.48, 1.02, 0.495], [0.06, 0.07, 0.035]);
-  part(root, dark, [0.43, 1.23, 0.34], [0.205, 0.04, 0.15]);
-  part(root, gold, [0.35, 1.19, 0.39], [0.035, 0.17, 0.035], [0, 0, -0.42]);
+  // Sacoche latérale en cuir, avec rabat, coutures et boucle métallique.
+  part(root, dark, [0.45, 1.03, 0.27], [0.22, 0.25, 0.17], [0, 0, -0.1]);
+  part(root, green, [0.46, 1.04, 0.34], [0.2, 0.22, 0.15], [0, 0, -0.1]);
+  part(root, green, [0.46, 1.2, 0.34], [0.215, 0.07, 0.16], [0, 0, -0.08]);
+  part(root, gold, [0.47, 1.08, 0.495], [0.065, 0.075, 0.035]);
+  part(root, dark, [0.46, 1.08, 0.526], [0.025, 0.04, 0.018]);
+  part(root, gold, [0.32, 1.18, 0.37], [0.035, 0.18, 0.035], [0, 0, -0.4]);
+  part(root, gold, [0.59, 1.18, 0.37], [0.025, 0.17, 0.025], [0, 0, 0.4]);
 
   return { root, head, tail, legs };
 }
