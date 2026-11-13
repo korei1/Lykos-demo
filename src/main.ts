@@ -92,8 +92,8 @@ function makeLykos() {
       const leg = new Container3D();
       leg.position.set(x, 0.58, z);
       root.addChild(leg);
-      part(leg, orange, [0, -0.2, 0], [0.14, 0.34, 0.15]);
-      part(leg, cream, [0, -0.42, 0.045], [0.145, 0.11, 0.19]);
+      part(leg, orange, [0, -0.19, 0], [0.125, 0.31, 0.135]);
+      part(leg, cream, [0, -0.43, 0.055], [0.135, 0.085, 0.205]);
       legs.push({ node: leg, baseRotationX: 0, baseRotationZ: 0 });
     }
   }
