@@ -1,5 +1,5 @@
 import './style.css';
-import { Application, Assets, Sprite } from 'pixi.js';
+import { Application, Assets, Graphics, Sprite } from 'pixi.js';
 
 const host = document.querySelector<HTMLDivElement>('#canvas-host');
 const status = document.querySelector<HTMLParagraphElement>('#status');
@@ -26,18 +26,32 @@ async function start(): Promise<void> {
   host!.appendChild(app.canvas);
 
   const texture = await Assets.load('/Lykos-demo/lykos.webp');
+
+  // Ombre douce au sol pour mieux ancrer le compagnon dans la scène.
+  const shadow = new Graphics()
+    .ellipse(0, 0, 42, 9)
+    .fill({ color: 0x304b50, alpha: 0.2 });
+  app.stage.addChild(shadow);
+
   const lykos = new Sprite(texture);
   lykos.anchor.set(0.5, 1);
   lykos.eventMode = 'static';
   lykos.cursor = 'grab';
   app.stage.addChild(lykos);
 
+  const getBaseScale = () => Math.min(
+    (app.renderer.width * 0.92) / texture.width,
+    (app.renderer.height * 0.88) / texture.height,
+  );
+
   const fit = () => {
     const w = app.renderer.width;
     const h = app.renderer.height;
-    const scale = Math.min((w * 0.92) / texture.width, (h * 0.88) / texture.height);
+    const scale = getBaseScale();
     lykos.scale.set(scale);
     lykos.position.set(w / 2, h * 0.94);
+    shadow.position.set(w / 2, h * 0.94);
+    shadow.scale.set(Math.max(0.65, scale * 1.8));
   };
   fit();
   app.renderer.on('resize', fit);
@@ -45,11 +59,10 @@ async function start(): Promise<void> {
   type Clip = 'Idle' | 'Walk' | 'Run';
   let clip: Clip = 'Idle';
   let elapsed = 0;
-  let baseX = 0;
-  let baseY = 0;
   let pointerDown = false;
   let lastPointerX = 0;
-  let dragRotation = 0;
+  let targetRotation = 0;
+  let currentRotation = 0;
 
   const play = (name: string) => {
     if (name !== 'Idle' && name !== 'Walk' && name !== 'Run') return;
@@ -66,8 +79,6 @@ async function start(): Promise<void> {
     });
   });
 
-  // L'illustration est conservée intacte : l'animation agit sur le sprite entier.
-  // Les mouvements indépendants des membres nécessiteront une version découpée en couches.
   app.canvas.addEventListener('pointerdown', (event) => {
     pointerDown = true;
     lastPointerX = event.clientX;
@@ -76,7 +87,8 @@ async function start(): Promise<void> {
   });
   app.canvas.addEventListener('pointermove', (event) => {
     if (!pointerDown) return;
-    dragRotation += (event.clientX - lastPointerX) * 0.0015;
+    targetRotation = Math.max(-0.16, Math.min(0.16,
+      targetRotation + (event.clientX - lastPointerX) * 0.0015));
     lastPointerX = event.clientX;
   });
   const release = () => {
@@ -88,20 +100,43 @@ async function start(): Promise<void> {
   app.canvas.addEventListener('lostpointercapture', release);
 
   app.ticker.add((ticker) => {
-    elapsed += ticker.deltaMS / 1000;
-    const wave = Math.sin(elapsed * (clip === 'Run' ? 12 : clip === 'Walk' ? 7 : 1.8));
-    const bounce = clip === 'Run' ? 0.024 : clip === 'Walk' ? 0.012 : 0.004;
-    const sway = clip === 'Run' ? 0.045 : clip === 'Walk' ? 0.025 : 0.008;
-    const stride = clip === 'Run' ? 0.018 : clip === 'Walk' ? 0.009 : 0;
-    baseX = app.renderer.width / 2;
-    baseY = app.renderer.height * 0.94;
-    lykos.position.x = baseX + (clip === 'Idle' ? Math.sin(elapsed * 0.55) * 2 : Math.sin(elapsed * 3) * app.renderer.width * stride);
-    lykos.position.y = baseY - Math.abs(wave) * app.renderer.height * bounce;
-    lykos.rotation = Math.sin(elapsed * (clip === 'Idle' ? 0.7 : 4)) * sway + dragRotation;
-    const breathing = clip === 'Idle' ? 1 + Math.sin(elapsed * 1.7) * 0.004 : 1;
-    const pulse = clip === 'Run' ? 1 + Math.abs(wave) * 0.008 : 1;
-    const s = Math.min((app.renderer.width * 0.92) / texture.width, (app.renderer.height * 0.88) / texture.height);
-    lykos.scale.set(s * breathing * pulse, s * (2 - breathing * pulse));
+    const dt = Math.min(ticker.deltaMS / 1000, 0.05);
+    elapsed += dt;
+
+    const speed = clip === 'Run' ? 11 : clip === 'Walk' ? 6.5 : 1.7;
+    const wave = Math.sin(elapsed * speed);
+    const intensity = clip === 'Run' ? 1 : clip === 'Walk' ? 0.48 : 0.12;
+    const baseX = app.renderer.width / 2;
+    const baseY = app.renderer.height * 0.94;
+    const baseScale = getBaseScale();
+
+    // Le mouvement reste volontairement global : l'illustration d'origine est aplatie.
+    const bob = clip === 'Idle'
+      ? Math.sin(elapsed * 1.6) * 2.2
+      : Math.abs(wave) * app.renderer.height * (clip === 'Run' ? 0.018 : 0.009);
+    const stride = clip === 'Idle' ? 0 : Math.sin(elapsed * speed * 0.5) * app.renderer.width * (clip === 'Run' ? 0.012 : 0.006);
+    const breathing = clip === 'Idle' ? 1 + Math.sin(elapsed * 1.45) * 0.003 : 1;
+    const squash = clip === 'Idle' ? 1 : 1 + Math.abs(wave) * (clip === 'Run' ? 0.006 : 0.003);
+
+    lykos.position.set(baseX + stride, baseY - bob);
+    currentRotation += (targetRotation - currentRotation) * Math.min(1, dt * 7);
+    if (!pointerDown) targetRotation *= Math.max(0, 1 - dt * 2.5);
+    const gaitTilt = Math.sin(elapsed * speed) * intensity * 0.018;
+    lykos.rotation = currentRotation + gaitTilt;
+
+    lykos.scale.set(
+      baseScale * breathing * squash,
+      baseScale * (breathing * 2 - squash),
+    );
+
+    // L'ombre se resserre légèrement lorsque Lykos bondit.
+    const airborne = Math.min(1, bob / 22);
+    shadow.position.set(baseX + stride, baseY + 1);
+    shadow.scale.set(
+      Math.max(0.65, baseScale * 1.8) * (1 - airborne * 0.18),
+      Math.max(0.65, baseScale * 1.8) * (1 - airborne * 0.32),
+    );
+    shadow.alpha = 0.2 - airborne * 0.07;
   });
 
   play('Idle');
